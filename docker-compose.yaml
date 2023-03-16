@@ -1,5 +1,19 @@
 version: "3.9"
 services:
+  haproxy:
+    image: haproxy:2.4
+    container_name: haproxy_load_balancer
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    networks:
+      - rabbitmq-cluster
+    depends_on:
+      - rabbitmq1
+      - rabbitmq2
+      - rabbitmq3
   rabbitmq1:
     image: rabbitmq:3-management
     hostname: rabbitmq1
@@ -8,8 +22,6 @@ services:
       - RABBITMQ_NODENAME=rabbitmq1
     networks:
       - rabbitmq-cluster
-    ports:
-      - "15672:15672"
 
   rabbitmq2:
     image: rabbitmq:3-management
